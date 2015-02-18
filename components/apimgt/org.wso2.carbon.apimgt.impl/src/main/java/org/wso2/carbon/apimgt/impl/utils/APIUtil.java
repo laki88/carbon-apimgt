@@ -3736,4 +3736,17 @@ public final class APIUtil {
         }
         return path;
     }
+
+    /**
+     * Read the organization id extractor class reference from api-manager.xml.
+     *
+     * @return organization id extractor class reference.
+     */
+    public static String getGroupingExtractorImplementation() {
+        APIManagerConfiguration config = ServiceReferenceHolder.getInstance().
+                getAPIManagerConfigurationService().getAPIManagerConfiguration();
+
+        String gropingExtractorClass = config.getFirstProperty(APIConstants.API_STORE_GROUP_EXTRACTOR_IMPLEMENTATION);
+        return gropingExtractorClass;
+    }
 }
