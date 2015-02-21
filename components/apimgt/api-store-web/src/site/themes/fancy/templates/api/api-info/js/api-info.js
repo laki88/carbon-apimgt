@@ -1,5 +1,5 @@
 function triggerSubscribe() {
-	$.ajaxSetup({
+    $.ajaxSetup({
         contentType: "application/x-www-form-urlencoded; charset=utf-8"
     });
     jagg.sessionAwareJS({redirect:'/site/pages/index.jag'});
