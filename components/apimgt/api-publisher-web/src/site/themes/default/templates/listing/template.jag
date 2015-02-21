@@ -88,10 +88,11 @@
                     path = jagg.getMappedUrl("/site/pages/item-info.jag") + "?name=" + api.name + "&version=" + api.version + "&provider=" + api.provider+urlPostfix;
 
                     var nameSubstring = api.name;
-                    if (api.name.length > 15) {
-                        nameSubstring = api.name.substring(0, 15)+"..";
+                    if(api.name != null) {
+                        if (api.name.length > 15) {
+                            nameSubstring = api.name.substring(0, 15)+"..";
+                        }
                     }
-
         %>
         <%if(query != null && (query.indexOf("Doc:") == 0 || query.indexOf("doc:") == 0)) {%>         
                 <div id="doc-search" style="padding-top:30px">       
