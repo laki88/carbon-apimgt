@@ -550,8 +550,8 @@ $(document).ready(function(){
     var v = $("#design_form").validate({
         contentType : "application/x-www-form-urlencoded;charset=utf-8",
         dataType: "json",
-	    onkeyup: false,
-        submitHandler: function(form) {            
+        onkeyup : false,
+        submitHandler: function(form) {
         var designer = APIDesigner();
         
         if(designer.has_resources() == false){
