@@ -36,6 +36,8 @@ include("/jagg/jagg.jag");
             }
         jagg.setUser({username:result.username, isSuperTenant:result.isSuperTenant, cookie:result.cookie, hasPublisherAccess:result.hasPublisherAccess});
         session.put("showLogin", "false");
+            //todo call the loginpostexecutor to get groupid
+        session.put("groupIds", "");
         }
         print(obj);
     } else if (action === "logout") {

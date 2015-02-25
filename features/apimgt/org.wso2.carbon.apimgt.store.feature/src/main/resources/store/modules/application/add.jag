@@ -4,7 +4,8 @@ var addApplication = function (username, application, tier, callbackUrl,descript
             store = jagg.module("manager").getAPIStoreObj();
 
     try {
-        var status=store.addApplication(application, username, tier, callbackUrl,descriptionNew);
+        var groupIds = session.get("groupIds");
+        var status=store.addApplication(application, username, tier, callbackUrl,descriptionNew,groupIds);
         if (log.isDebugEnabled()) {
             log.debug("addApplication");
         }

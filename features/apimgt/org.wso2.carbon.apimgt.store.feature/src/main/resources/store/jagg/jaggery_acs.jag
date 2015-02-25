@@ -54,6 +54,11 @@
                         ssoRelyingParty.addSession(session);
                         session.put("showLogin", "false");
                         var api = jagg.module("api");
+                        var manager = jagg.module("manager");
+                        var  store = manager.getAPIStoreObj();
+                        var samlReponse = ssoRelyingParty.decode(samlResponse);
+                        var groupIds = store.getGroupIds(samlReponse);
+                        session.put("groupIds", groupIds);
 
                         //update permission cache before validate user
                         api.updatePermissionCache(ssoRelyingParty.getLoggedInUser(sessionId));
@@ -71,11 +76,10 @@
                          response.sendRedirect("../site/pages/logout.jag");
                          } else{
 			            var username = ssoRelyingParty.getLoggedInUser(sessionId);
-			            var manager = jagg.module("manager");
           		        var  store = manager.getAPIStoreObj();
 			            var subscriber = store.getSubscriber(username);
     			        if (!subscriber) {
-        			        store.addSubscriber(username);
+        			        store.addSubscriber(username, groupIds);
         			        subscriber = store.getSubscriber(username);
     			        }
                         session.put("LOGGED_IN_USER",ssoRelyingParty.getLoggedInUser(sessionId));
