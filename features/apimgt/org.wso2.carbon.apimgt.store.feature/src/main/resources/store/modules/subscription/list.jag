@@ -5,8 +5,7 @@ var getAllSubscriptions = function (username, selectedAppName) {
             store = jagg.module("manager").getAPIStoreObj();
 
     try {
-        var groupIds = session.get("groupIds");
-        applications = store.getAllSubscriptions(username , selectedAppName, groupIds);
+        applications = store.getAllSubscriptions(username , selectedAppName);
         if (log.isDebugEnabled()) {
             log.debug("getAllSubscriptions : " + stringify(applications));
         }

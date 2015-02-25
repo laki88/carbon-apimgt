@@ -34,7 +34,7 @@ var login = function (username, password,tenantMode) {
     }
     var subscriber = store.getSubscriber(username);
     if (!subscriber) {
-        store.addSubscriber(username, "");
+        store.addSubscriber(username);
         subscriber = store.getSubscriber(username);
     }
     cookie = result.sessionId;
@@ -77,7 +77,7 @@ var loginWithSAMLToken = function (token) {
     var userName = ssoRelyingParty.getSAMLResponseNameId(token);
     var subscriber = store.getSubscriber(userName);
     if (!subscriber) {
-        store.addSubscriber(userName ,"");
+        store.addSubscriber(userName);
         subscriber = store.getSubscriber(userName);
     }
     return {
