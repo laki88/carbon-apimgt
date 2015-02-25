@@ -51,8 +51,6 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.cache.Caching;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -1420,7 +1418,7 @@ class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
     public Set<SubscribedAPI> getSubscribedAPIs(Subscriber subscriber, String applicationName) throws APIManagementException {
         Set<SubscribedAPI> subscribedAPIs = null;
         try {
-        	subscribedAPIs = apiMgtDAO.getSubscribedAPIs(subscriber, applicationName, null);
+        	subscribedAPIs = apiMgtDAO.getSubscribedAPIs(subscriber, applicationName);
             if(subscribedAPIs!=null && !subscribedAPIs.isEmpty()){
             	Map<String, Tier> tiers=APIUtil.getTiers(tenantId);
             	for(SubscribedAPI subscribedApi:subscribedAPIs) {
@@ -1434,25 +1432,6 @@ class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         }
         return subscribedAPIs;
     }
-
-    public Set<SubscribedAPI> getSubscribedAPIs(Subscriber subscriber, String applicationName, String groupId) throws APIManagementException {
-        Set<SubscribedAPI> subscribedAPIs = null;
-        try {
-            subscribedAPIs = apiMgtDAO.getSubscribedAPIs(subscriber, applicationName, groupId);
-            if(subscribedAPIs!=null && !subscribedAPIs.isEmpty()){
-                Map<String, Tier> tiers=APIUtil.getTiers(tenantId);
-                for(SubscribedAPI subscribedApi:subscribedAPIs) {
-                    Tier tier=tiers.get(subscribedApi.getTier().getName());
-                    subscribedApi.getTier().setDisplayName(tier!=null?tier.getDisplayName():subscribedApi.getTier().getName());
-                    subscribedAPIs.add(subscribedApi);
-                }
-            }
-        } catch (APIManagementException e) {
-            handleException("Failed to get APIs of " + subscriber.getName() + " under application " + applicationName, e);
-        }
-        return subscribedAPIs;
-    }
-
 
     public Set<APIIdentifier> getAPIByConsumerKey(String accessToken) throws APIManagementException {
         try {
@@ -1825,11 +1804,6 @@ class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
         return apiMgtDAO.getApplications(subscriber);
     }
 
-    @Override
-    public Application[] getApplications(Subscriber subscriber, String groupId) throws APIManagementException {
-        return apiMgtDAO.getApplications(subscriber, groupId);
-    }
-
     public boolean isApplicationTokenExists(String accessToken) throws APIManagementException {
         return apiMgtDAO.isAccessTokenExists(accessToken);
     }
@@ -2106,34 +2080,6 @@ class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
 		return null;
 	}
 
-    public String getGroupIds(String response) throws APIManagementException{
-                String groupingExtractorClass = APIUtil.getGroupingExtractorImplementation();
-                if (groupingExtractorClass != null) {
-                        try {
-                                Class groupingExtractor = Class.forName(groupingExtractorClass);
-                                Object groupingExtractorObj = groupingExtractor.newInstance();
-                                Method method = groupingExtractor.getDeclaredMethod("getGroupingIdentifiers", new Class[]{String.class});
-                                return (String) method.invoke(groupingExtractorObj, response);
-
-                                    } catch (ClassNotFoundException e) {
-                                handleException(groupingExtractorClass+" is not found in run time", e);
-                                return null;
-                            } catch (InvocationTargetException e) {
-                                handleException("Error occurred while invocation of getGroupingIdentifier method", e);
-                                return null;
-                            } catch (NoSuchMethodException e) {
-                                handleException("There is not a method called getGroupingIdentifier in "+groupingExtractorClass, e);
-                                return null;
-                            } catch (IllegalAccessException e) {
-                                handleException("Error occurred while invocation of getGroupingIdentifier method", e);
-                                return null;
-                            } catch (InstantiationException e) {
-                                handleException("Error occurred while instantiating "+groupingExtractorClass+" class", e);
-                                return null;
-                            }
-                    }
-                return null;
-            }
 	
 
 }

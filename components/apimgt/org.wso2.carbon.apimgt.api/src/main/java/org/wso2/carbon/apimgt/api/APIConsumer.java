@@ -156,8 +156,6 @@ public interface APIConsumer extends APIManager {
     public Set<SubscribedAPI> getSubscribedAPIs(Subscriber subscriber, String applicationName)
             throws APIManagementException;
 
-    public Set<SubscribedAPI> getSubscribedAPIs(Subscriber subscriber, String applicationName, String groupId) throws APIManagementException;
-
     /**
      * Returns true if a given user has subscribed to the API
      *
@@ -272,8 +270,6 @@ public interface APIConsumer extends APIManager {
      */
     public Application[] getApplications(Subscriber subscriber) throws APIManagementException;
 
-    public Application[] getApplications(Subscriber subscriber, String groupId) throws APIManagementException;
-
     public Set<SubscribedAPI> getSubscribedIdentifiers(Subscriber subscriber,
                                                        APIIdentifier identifier) throws APIManagementException;
     
@@ -371,6 +367,4 @@ public interface APIConsumer extends APIManager {
      */
     public Map<String,Object> getAllPaginatedAPIsByStatus(String tenantDomain, int start, int end, String Status)
             throws APIManagementException;
-
-    public String getGroupIds(String response) throws APIManagementException;
 }

@@ -3758,7 +3758,7 @@ public final class APIUtil {
                     Entry thisEntry = (Entry) entries.next();
                     String key = (String) thisEntry.getKey();
                     String value = (String) thisEntry.getValue();
-                    domains.put(key, value);
+                    domains.put(key,value);
                 }
             }
 
@@ -3776,18 +3776,5 @@ public final class APIUtil {
             throw new APIManagementException(msg, e);
         }
         return domains;
-
-    }
-    /**
-     * Read the organization id extractor class reference from api-manager.xml.
-     *
-     * @return organization id extractor class reference.
-     */
-    public static String getGroupingExtractorImplementation() {
-        APIManagerConfiguration config = ServiceReferenceHolder.getInstance().
-                getAPIManagerConfigurationService().getAPIManagerConfiguration();
-
-        String gropingExtractorClass = config.getFirstProperty(APIConstants.API_STORE_GROUP_EXTRACTOR_IMPLEMENTATION);
-        return gropingExtractorClass;
     }
 }
