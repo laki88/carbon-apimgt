@@ -5,7 +5,8 @@ var getApplications = function (username) {
             store = jagg.module("manager").getAPIStoreObj();
 
     try {
-        applications = store.getApplications(username);
+        var groupIds = session.get("groupIds");
+        applications = store.getApplications(username, groupIds);
         if (log.isDebugEnabled()) {
             log.debug("getApplications : " + stringify(applications));
         }
