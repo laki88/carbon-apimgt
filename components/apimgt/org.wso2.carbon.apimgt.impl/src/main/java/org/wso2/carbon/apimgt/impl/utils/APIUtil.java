@@ -3779,9 +3779,9 @@ public final class APIUtil {
 
     }
     /**
-     * Read the organization id extractor class reference from api-manager.xml.
+     * Read the group id extractor class reference from api-manager.xml.
      *
-     * @return organization id extractor class reference.
+     * @return group id extractor class reference.
      */
     public static String getGroupingExtractorImplementation() {
         APIManagerConfiguration config = ServiceReferenceHolder.getInstance().

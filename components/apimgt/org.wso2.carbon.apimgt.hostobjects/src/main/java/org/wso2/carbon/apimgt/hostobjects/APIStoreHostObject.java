@@ -2459,7 +2459,7 @@ public class APIStoreHostObject extends ScriptableObject {
                                                              Scriptable thisObj, Object[] args, Function funObj)
             throws ScriptException, APIManagementException {
 
-        if (args == null || args.length == 0) {
+        if (args == null || args.length <3) {
             return null;
         }
 
@@ -2474,7 +2474,7 @@ public class APIStoreHostObject extends ScriptableObject {
         try {
             String username = args[0].toString();
             String appName = args[1].toString();
-            String groupId = args[2].toString();
+            String groupIds = args[2].toString();
 
             String tenantDomain = MultitenantUtils.getTenantDomain(APIUtil.replaceEmailDomainBack(username));
             if (tenantDomain != null &&
@@ -2487,14 +2487,11 @@ public class APIStoreHostObject extends ScriptableObject {
             Subscriber subscriber = new Subscriber(username);
             APIConsumer apiConsumer = getAPIConsumer(thisObj);
             Application[] applications;
-                        if("".equals(groupId) || groupId == null){
-                                applications = apiConsumer.getApplications(new Subscriber(username));
-                            }
-                        else{
-                                applications = apiConsumer.getApplications(new Subscriber(username), groupId);
-                            }
-                        //Application[] applications = apiConsumer.getApplications(new Subscriber(username), groupId);
-
+            if ("".equals(groupIds) || groupIds == null) {
+                applications = apiConsumer.getApplications(new Subscriber(username));
+            } else {
+                applications = apiConsumer.getApplications(new Subscriber(username), groupIds);
+            }
             if (applications != null) {
                 int i = 0;
                 for (Application application : applications) {
@@ -2610,12 +2607,12 @@ public class APIStoreHostObject extends ScriptableObject {
                             }
 
                             Set<SubscribedAPI> subscribedAPIs;
-                            if (groupId == null || "".equals(groupId)) {
+                            if (groupIds == null || "".equals(groupIds)) {
                                 subscribedAPIs =
                                         apiConsumer.getSubscribedAPIs(subscriber,
                                                                       application.getName());
                             } else {
-                                subscribedAPIs = apiConsumer.getSubscribedAPIs(subscriber, application.getName(), groupId);
+                                subscribedAPIs = apiConsumer.getSubscribedAPIs(subscriber, application.getName(), groupIds);
                             }
                             for (SubscribedAPI subscribedAPI : subscribedAPIs) {
                                 addAPIObj(subscribedAPI, apisArray, thisObj);
@@ -2750,8 +2747,8 @@ public class APIStoreHostObject extends ScriptableObject {
 
         if (args != null && isStringArray(args)) {
             Subscriber subscriber = new Subscriber((String) args[0]);
-            String groupId = (String) args[1];
-            subscriber.setGroupIds(groupId);
+            String groupIds = (String) args[1];
+            subscriber.setGroupIds(groupIds);
             subscriber.setSubscribedDate(new Date());
             //TODO : need to set the proper email
             subscriber.setEmail("");
@@ -2814,12 +2811,12 @@ public class APIStoreHostObject extends ScriptableObject {
             String tier = (String) args[2];
             String callbackUrl = (String) args[3];
             String description = (String) args[4];
-            String groupId = (String) args[5];
+            String groupIds = (String) args[5];
 
             APIConsumer apiConsumer = getAPIConsumer(thisObj);
             Subscriber subscriber = new Subscriber(username);
 
-            if (groupId == null || "".equals(groupId)) {
+            if (groupIds == null || "".equals(groupIds)) {
                 Application[] apps = apiConsumer.getApplications(subscriber);
                 for (Application app : apps) {
                     if (app.getName().equals(name)) {
@@ -2828,7 +2825,7 @@ public class APIStoreHostObject extends ScriptableObject {
                 }
 
             } else {
-                Application[] apps = apiConsumer.getApplications(subscriber, groupId);
+                Application[] apps = apiConsumer.getApplications(subscriber, groupIds);
                 for (Application app : apps) {
                     if (app.getName().equals(name)) {
                         handleException("A duplicate application already exists by the name - " + name);
@@ -2841,8 +2838,8 @@ public class APIStoreHostObject extends ScriptableObject {
             application.setTier(tier);
             application.setCallbackUrl(callbackUrl);
             application.setDescription(description);
-            if (groupId != null) {
-                application.setGroupIds(groupId);
+            if (groupIds != null) {
+                application.setGroupIds(groupIds);
             }
 
             status = apiConsumer.addApplication(application, username);
@@ -2873,10 +2870,10 @@ public class APIStoreHostObject extends ScriptableObject {
         if (args != null && isStringArray(args)) {
             String name = (String) args[0];
             String username = (String) args[1];
-            String groupId = (String) args[2];
+            String groupIds = (String) args[2];
             Subscriber subscriber = new Subscriber(username);
             APIConsumer apiConsumer = getAPIConsumer(thisObj);
-            Application[] apps = apiConsumer.getApplications(subscriber, groupId);
+            Application[] apps = apiConsumer.getApplications(subscriber, groupIds);
             if (apps == null || apps.length == 0) {
                 return false;
             }
@@ -2943,10 +2940,10 @@ public class APIStoreHostObject extends ScriptableObject {
             String tier = (String) args[3];
             String callbackUrl = (String) args[4];
             String description = (String) args[5];
-            String groupId = (String) args[6];
+            String groupIds = (String) args[6];
             Subscriber subscriber = new Subscriber(username);
             APIConsumer apiConsumer = getAPIConsumer(thisObj);
-            Application[] apps = apiConsumer.getApplications(subscriber, groupId);
+            Application[] apps = apiConsumer.getApplications(subscriber, groupIds);
             if (apps == null || apps.length == 0) {
                 return false;
             }
@@ -3973,18 +3970,33 @@ public class APIStoreHostObject extends ScriptableObject {
         return myn;
     }
 
-    public static String jsFunction_getGroupIds(Context cx, Scriptable thisObj,
-                                               Object[] args, Function funObj) {
+    /**
+     * Returns a group id list that is extracted from login response.
+     *
+     * @param cx
+     * @param thisObj
+     * @param args
+     * @param funObj
+     * @return a list of group ids that user belongs
+     */
+    public static NativeArray jsFunction_getGroupIds(Context cx, Scriptable thisObj,
+                                                     Object[] args, Function funObj) throws APIManagementException {
         String response = (String) args[0];
         APIConsumer consumer = getAPIConsumer(thisObj);
-        String groupId = null;
-        try {
-            groupId = consumer.getGroupIds(response);
-        } catch (APIManagementException e) {
-            log.error("Error occurred while getting group id");
+        List<String> groupIds = consumer.getGroupIds(response);
+        int i = 0;
+        NativeArray groupIdList = null;
+        if (groupIds == null || groupIds.size() == 0) {
+            return groupIdList;
+        } else {
+            groupIdList = new NativeArray(groupIds.size());
+            for (String groupId : groupIds) {
+                groupIdList.put(i, groupIdList, groupId);
+                i++;
+            }
         }
-        return groupId;
 
+        return groupIdList;
     }
 
 }

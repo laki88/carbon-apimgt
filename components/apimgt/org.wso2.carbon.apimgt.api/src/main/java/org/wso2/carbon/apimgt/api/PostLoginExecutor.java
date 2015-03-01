@@ -20,13 +20,16 @@
 package org.wso2.carbon.apimgt.api;
 
 
-public interface LoginPostExecutor {
+import java.util.List;
+
+public interface PostLoginExecutor {
 
     /**
-     * get organization id related to user for the purpose of sharing applications and subscriptions in an organization
+     * Get group id list related to a user that is extract from login response for the purpose of sharing applications
+     * and subscriptions based on groups.
      *
      * @param response login response
      * @return organization identifier
      */
-    public String getGroupingIdentifiers(String response);
+    public List<String> getGroupingIdentifiers(String response);
 }

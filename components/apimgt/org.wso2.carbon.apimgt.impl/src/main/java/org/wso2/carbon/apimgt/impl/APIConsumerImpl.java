@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.apimgt.api.APIConsumer;
 import org.wso2.carbon.apimgt.api.APIManagementException;
+import org.wso2.carbon.apimgt.api.PostLoginExecutor;
 import org.wso2.carbon.apimgt.api.model.*;
 import org.wso2.carbon.apimgt.api.model.Tag;
 import org.wso2.carbon.apimgt.handlers.security.stub.types.APIKeyMapping;
@@ -2106,34 +2107,35 @@ class APIConsumerImpl extends AbstractAPIManager implements APIConsumer {
 		return null;
 	}
 
-    public String getGroupIds(String response) throws APIManagementException{
-                String groupingExtractorClass = APIUtil.getGroupingExtractorImplementation();
-                if (groupingExtractorClass != null) {
-                        try {
-                                Class groupingExtractor = Class.forName(groupingExtractorClass);
-                                Object groupingExtractorObj = groupingExtractor.newInstance();
-                                Method method = groupingExtractor.getDeclaredMethod("getGroupingIdentifiers", new Class[]{String.class});
-                                return (String) method.invoke(groupingExtractorObj, response);
+    /**
+     * get group id list from login response. the logic of extraction of group id list from login response is implemented
+     * in a custom class.class definition will retrieve from api-manager.xml
+     *
+     * @param response login response
+     * @return
+     * @throws APIManagementException
+     */
+    public List<String> getGroupIds(String response) throws APIManagementException {
+        String groupingExtractorClass = APIUtil.getGroupingExtractorImplementation();
+        if (groupingExtractorClass != null) {
+            try {
+                Class groupingExtractor = APIConsumerImpl.class.getClassLoader().loadClass(groupingExtractorClass);
+                PostLoginExecutor postLoginExecutor = (PostLoginExecutor) groupingExtractor.newInstance();
+                return postLoginExecutor.getGroupingIdentifiers(response);
 
-                                    } catch (ClassNotFoundException e) {
-                                handleException(groupingExtractorClass+" is not found in run time", e);
-                                return null;
-                            } catch (InvocationTargetException e) {
-                                handleException("Error occurred while invocation of getGroupingIdentifier method", e);
-                                return null;
-                            } catch (NoSuchMethodException e) {
-                                handleException("There is not a method called getGroupingIdentifier in "+groupingExtractorClass, e);
-                                return null;
-                            } catch (IllegalAccessException e) {
-                                handleException("Error occurred while invocation of getGroupingIdentifier method", e);
-                                return null;
-                            } catch (InstantiationException e) {
-                                handleException("Error occurred while instantiating "+groupingExtractorClass+" class", e);
-                                return null;
-                            }
-                    }
-                return null;
+            } catch (ClassNotFoundException e) {
+                handleException(groupingExtractorClass + " is not found in run time", e);
+
+            } catch (IllegalAccessException e) {
+                handleException("Error occurred while invocation of getGroupingIdentifier method", e);
+
+            } catch (InstantiationException e) {
+                handleException("Error occurred while instantiating " + groupingExtractorClass + " class", e);
+
             }
-	
+        }
+        return null;
+    }
+
 
 }

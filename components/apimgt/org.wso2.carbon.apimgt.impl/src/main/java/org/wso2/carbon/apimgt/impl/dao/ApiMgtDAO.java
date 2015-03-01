@@ -4550,8 +4550,10 @@ public class ApiMgtDAO {
     }
 
     /**
+     * Returns a list of applications for a given group id.
+     *
      * @param groupingId
-     * @return
+     * @return A list of applications
      * @throws APIManagementException
      */
     public Application[] getApplications(Subscriber subscriber, String groupingId) throws APIManagementException {

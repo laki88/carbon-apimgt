@@ -20,6 +20,7 @@ package org.wso2.carbon.apimgt.api;
 
 import org.wso2.carbon.apimgt.api.model.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -156,6 +157,15 @@ public interface APIConsumer extends APIManager {
     public Set<SubscribedAPI> getSubscribedAPIs(Subscriber subscriber, String applicationName)
             throws APIManagementException;
 
+    /**
+     * Returns a set of subscribed APIs filtered by the given application name and group id.
+     *
+     * @param subscriber
+     * @param applicationName
+     * @param groupId
+     * @return A set of Subscribed APIs
+     * @throws APIManagementException
+     */
     public Set<SubscribedAPI> getSubscribedAPIs(Subscriber subscriber, String applicationName, String groupId) throws APIManagementException;
 
     /**
@@ -272,6 +282,14 @@ public interface APIConsumer extends APIManager {
      */
     public Application[] getApplications(Subscriber subscriber) throws APIManagementException;
 
+    /**
+     * Returns a list of applications for a given subscriber and groupId
+     *
+     * @param subscriber
+     * @param groupId
+     * @return An array of applications
+     * @throws APIManagementException
+     */
     public Application[] getApplications(Subscriber subscriber, String groupId) throws APIManagementException;
 
     public Set<SubscribedAPI> getSubscribedIdentifiers(Subscriber subscriber,
@@ -372,5 +390,12 @@ public interface APIConsumer extends APIManager {
     public Map<String,Object> getAllPaginatedAPIsByStatus(String tenantDomain, int start, int end, String Status)
             throws APIManagementException;
 
-    public String getGroupIds(String response) throws APIManagementException;
+    /**
+     * Returns a list of group ids that user belongs that is extracted from login response
+     *
+     * @param response login response
+     * @return a list of group ids that user belongs
+     * @throws APIManagementException
+     */
+    public List<String> getGroupIds(String response) throws APIManagementException;
 }
